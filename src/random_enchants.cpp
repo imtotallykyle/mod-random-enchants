@@ -22,9 +22,9 @@ void rollPossibleEnchant(Player* player, Item* item)
     uint32 slotEnch[3] = { 0, 1, 5 };
 
     // Fetching the configuration values as float
-    float enchantChance1 = sConfigMgr->GetOption<float>("RandomEnchants.EnchantChance1", 70.0f);
-    float enchantChance2 = sConfigMgr->GetOption<float>("RandomEnchants.EnchantChance2", 65.0f);
-    float enchantChance3 = sConfigMgr->GetOption<float>("RandomEnchants.EnchantChance3", 60.0f);
+    float enchantChance1 = sConfigMgr->GetOption<float>("RandomEnchants.EnchantChance1", 100.0f);
+    float enchantChance2 = sConfigMgr->GetOption<float>("RandomEnchants.EnchantChance2", 00.0f);
+    float enchantChance3 = sConfigMgr->GetOption<float>("RandomEnchants.EnchantChance3", 00.0f);
 
     if (rand_chance() < enchantChance1)
         slotRand[0] = getRandEnchantment(item);
@@ -67,8 +67,9 @@ uint32 getRandEnchantment(Item* item)
 {
     uint32 itemClass = item->GetTemplate()->Class;
     uint32 itemQuality = item->GetTemplate()->Quality;
+    uint32 itemLevel = item->GetTemplate()->ItemLevel;
     std::string classQueryString = "";
-    int rarityRoll = -1;
+    std::string wdbString = "";
     uint8 tier = 0;
 
     switch (itemClass)
@@ -84,43 +85,78 @@ uint32 getRandEnchantment(Item* item)
     if (classQueryString == "")
         return -1;
 
+    if (itemLevel <= 10)
+        tier = 1;
+    else if (itemLevel <= 14)
+        tier = 2;
+    else if (itemLevel <= 19)
+        tier = 3;
+    else if (itemLevel <= 24)
+        tier = 4;
+    else if (itemLevel <= 29)
+        tier = 5;
+    else if (itemLevel <= 34)
+        tier = 6;
+    else if (itemLevel <= 39)
+        tier = 7;
+    else if (itemLevel <= 44)
+        tier = 8;
+    else if (itemLevel <= 49)
+        tier = 9;
+    else if (itemLevel <= 54)
+        tier = 10;
+    else if (itemLevel <= 59)
+        tier = 11;
+    else if (itemLevel <= 64)
+        tier = 12;
+    else if (itemLevel <= 102)
+        tier = 13;
+    else if (itemLevel <= 138)
+        tier = 14;
+    else if (itemLevel <= 158)
+        tier = 15;
+    else if (itemLevel <= 178)
+        tier = 16;
+    else
+        tier = 17;
+
     switch (itemQuality)
     {
         case GREY:
-            rarityRoll = rand_norm() * 25;
             break;
         case WHITE:
-            rarityRoll = rand_norm() * 50;
             break;
         case GREEN:
-            rarityRoll = 45 + (rand_norm() * 20);
             break;
         case BLUE:
-            rarityRoll = 65 + (rand_norm() * 15);
+            tier += 1;
             break;
         case PURPLE:
-            rarityRoll = 80 + (rand_norm() * 14);
+            tier += 2;
             break;
         case ORANGE:
-            rarityRoll = 93;
+            tier += 3;
             break;
     }
 
-    if (rarityRoll < 0)
-        return -1;
 
-    if (rarityRoll <= 44)
-        tier = 1;
-    else if (rarityRoll <= 64)
-        tier = 2;
-    else if (rarityRoll <= 79)
-        tier = 3;
-    else if (rarityRoll <= 92)
-        tier = 4;
+    wdbString = "SELECT `enchantID` FROM `item_enchantment_random_tiers` WHERE `tier`='" + std::to_string(tier);
+
+    if (classQueryString == "WEAPON" && tier < 6)
+        if (rand_chance() < 5.0f)
+            wdbString += "' AND `class`='" + classQueryString + "' ORDER BY RAND() LIMIT 1";
+        else
+            wdbString += "' AND `class`='ANY' ORDER BY RAND() LIMIT 1";
+    else if (classQueryString == "ARMOR" && tier < 14 && tier != 12 && tier != 11 && tier != 6)
+        if (rand_chance() < 5.0f)
+            wdbString += "' AND `class`='" + classQueryString + "' ORDER BY RAND() LIMIT 1";
+        else
+            wdbString += "' AND `class`='ANY' ORDER BY RAND() LIMIT 1";
     else
-        tier = 5;
+        wdbString += "' AND `class`='ANY' ORDER BY RAND() LIMIT 1" ;
 
-    QueryResult result = WorldDatabase.Query("SELECT `enchantID` FROM `item_enchantment_random_tiers` WHERE `tier`={} AND `exclusiveSubClass`=NULL AND exclusiveSubClass='{}' OR `class`='{}' OR `class`='ANY' ORDER BY RAND() LIMIT 1", tier, item->GetTemplate()->SubClass, classQueryString, classQueryString);
+
+    QueryResult result = WorldDatabase.Query(wdbString);
 
     if (!result)
         return 0;

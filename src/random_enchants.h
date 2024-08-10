@@ -7,7 +7,7 @@
 #include "Configuration/Config.h"
 #include "Chat.h"
 
-enum ItemQuality
+enum itemQuality
 {
     GREY = 0,
     WHITE,
