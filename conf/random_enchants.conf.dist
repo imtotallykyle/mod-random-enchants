@@ -10,7 +10,7 @@
 #        Enable or disable the module
 #        Default:     1 (enabled)
 
-RandomEnchants.Enable = 1
+RandomEnchants.Enable=1
 
 #
 #     RandomEnchants.AnnounceOnLogin
@@ -52,7 +52,33 @@ RandomEnchants.OnQuestReward=1
 #        Chance at random enchant on obtaining item from group rolls
 #        Default:     1
 
-RandomEnchants.OnGroupRoll = 1
+RandomEnchants.OnGroupRoll=1
+
+#     RandomEnchants.IncludeProfessionEnchants
+#        Weather or not to include Gathering Profession Enchants (i.e. +5 Fishing, +5 Skinning, etc.) when randomly enchanting.
+#        (Included in all Tiers upto LVL 80 Green gear, and only applied to White or Green gear.)
+#        Default:     1
+
+RandomEnchants.IncludeProfessionEnchants=1
+
+#     RandomEnchants.ProfessionEnchantChance
+#        Probability (in percentage) for any profession related enchant to be applied if an enchant is to be applied.
+#        Default:     4.0 (With 4 Gathering Profession, this gives a 1% chance of getting a profession related enchant.)
+
+RandomEnchants.ProfessionEnchantChance=4.0
+
+#     RandomEnchants.IncludeMountEnchants
+#        Weather or not to include Mount speedboost Enchants (i.e. +2%, +4%, or +10% Mount Speed) when randomly enchanting.
+#        (+2 on LVL 20-39 gear, +4 on LVL 40-79 gear, +10 on LVL 80 gear, and only applied to White or Green gear.)
+#        Default:     1
+
+RandomEnchants.IncludeMountEnchants=1
+
+#     RandomEnchants.MountEnchantChance
+#        Probability (in percentage) for any profession related enchant to be applied if an enchant is to be applied.
+#        Default:     2.0
+
+RandomEnchants.MountEnchantChance=2.0
 
 #     RandomEnchants.EnchantChance1
 #        Probability (in percentage) for the first enchant to be applied.

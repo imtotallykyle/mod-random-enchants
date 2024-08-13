@@ -71,6 +71,7 @@ uint32 getRandEnchantment(Item* item)
     std::string classQueryString = "";
     std::string wdbString = "";
     uint8 tier = 0;
+    bool whiteORgreen = false;
 
     switch (itemClass)
     {
@@ -120,6 +121,7 @@ uint32 getRandEnchantment(Item* item)
     else
         tier = 17;
 
+    // Boost tier rank based on quality of item being enchanted
     switch (itemQuality)
     {
         case GREY:
@@ -139,29 +141,51 @@ uint32 getRandEnchantment(Item* item)
             break;
     }
 
-
     wdbString = "SELECT `enchantID` FROM `item_enchantment_random_tiers` WHERE `tier`='" + std::to_string(tier);
 
-    if (classQueryString == "WEAPON" && tier < 6)
+    // Fetching the configuration values as float
+    float professionEnchantChance = sConfigMgr->GetOption<float>("RandomEnchants.ProfessionEnchantChance", 4.0f);
+    float mountEnchantChance = sConfigMgr->GetOption<float>("RandomEnchants.MountEnchantChance", 2.0f);
+
+    // Check if Item is White or Green
+    if (itemQuality == WHITE || itemQuality == GREEN)
+        whiteORgreen = true;
+    
+    if (sConfigMgr->GetOption<bool>("RandomEnchants.IncludeProfessionEnchants", true) && whiteORgreen == true && rand_chance() < professionEnchantChance)
+        wdbString += "' AND `category`='PROFESSION' ORDER BY RAND() LIMIT 1";
+    else if (sConfigMgr->GetOption<bool>("RandomEnchants.IncludeMountEnchants", true) && whiteORgreen == true && rand_chance() < mountEnchantChance)
+        wdbString += "' AND `category`='MOUNT' ORDER BY RAND() LIMIT 1";
+    else if (classQueryString == "WEAPON")
         if (rand_chance() < 5.0f)
-            wdbString += "' AND `class`='" + classQueryString + "' ORDER BY RAND() LIMIT 1";
+            wdbString += "' AND `class`='" + classQueryString + "' AND `category` IS NULL ORDER BY RAND() LIMIT 1";
         else
-            wdbString += "' AND `class`='ANY' ORDER BY RAND() LIMIT 1";
-    else if (classQueryString == "ARMOR" && tier < 14 && tier != 12 && tier != 11 && tier != 6)
+            wdbString += "' AND `class`='ANY' AND `category` IS NULL ORDER BY RAND() LIMIT 1";
+    else if (classQueryString == "ARMOR")
         if (rand_chance() < 5.0f)
-            wdbString += "' AND `class`='" + classQueryString + "' ORDER BY RAND() LIMIT 1";
+            wdbString += "' AND `class`='" + classQueryString + "' AND `category` IS NULL ORDER BY RAND() LIMIT 1";
         else
-            wdbString += "' AND `class`='ANY' ORDER BY RAND() LIMIT 1";
+            wdbString += "' AND `class`='ANY' AND `category` IS NULL ORDER BY RAND() LIMIT 1";
     else
-        wdbString += "' AND `class`='ANY' ORDER BY RAND() LIMIT 1" ;
+        wdbString += "' AND `class`='ANY' AND `category` IS NULL ORDER BY RAND() LIMIT 1";
 
-
+    // Check if a random enchant matching criteria was found
     QueryResult result = WorldDatabase.Query(wdbString);
 
+    // If result failed to find enchant, try a random class 'ANY' enchant
+    if (!result)
+        wdbString = "SELECT `enchantID` FROM `item_enchantment_random_tiers` WHERE `tier`='" + std::to_string(tier) + "' AND `class`='ANY' AND `category` IS NULL ORDER BY RAND() LIMIT 1";
+    else
+        return result->Fetch()[0].Get<uint32>();
+
+    // Check if the backup class 'ANY' enchant was found 
+    result = WorldDatabase.Query(wdbString);        
+
+    // If result failed again, abort 
     if (!result)
         return 0;
 
     return result->Fetch()[0].Get<uint32>();
+
 }
 
 void RandomEnchantsPlayer::OnLogin(Player* player)
