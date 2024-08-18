@@ -30,6 +30,7 @@ public:
     void OnCreateItem(Player* player, Item* item, uint32 /*count*/) override;
     void OnQuestRewardItem(Player* player, Item* item, uint32 /*count*/) override;
     void OnGroupRollRewardItem(Player* player, Item* item, uint32 /*count*/, RollVote /*voteType*/, Roll* /*roll*/) override;
+    void OnAfterStoreOrEquipNewItem(Player* player, uint32 /*vendorslot*/, Item* item, uint8 /*count*/, uint8 /*bag*/, uint8 /*slot*/, ItemTemplate const* /*pProto*/, Creature* /*pVendor*/, VendorItem const* /*crItem*/, bool /*bStore*/) override;
 };
 
 void AddRandomEnchantsScripts()

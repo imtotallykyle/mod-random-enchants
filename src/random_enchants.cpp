@@ -217,3 +217,9 @@ void RandomEnchantsPlayer::OnGroupRollRewardItem(Player* player, Item* item, uin
     if (sConfigMgr->GetOption<bool>("RandomEnchants.OnGroupRoll", true) && (sConfigMgr->GetOption<bool>("RandomEnchants.Enable", true)))
         rollPossibleEnchant(player, item);
 }
+
+void RandomEnchantsPlayer::OnAfterStoreOrEquipNewItem(Player* player, uint32 /*vendorslot*/, Item* item, uint8 /*count*/, uint8 /*bag*/, uint8 /*slot*/, ItemTemplate const* /*pProto*/, Creature* /*pVendor*/, VendorItem const* /*crItem*/, bool /*bStore*/)
+{
+    if (sConfigMgr->GetOption<bool>("RandomEnchants.OnAfterStoreOrEquipNewItem", true) && (sConfigMgr->GetOption<bool>("RandomEnchants.Enable", true)))
+        rollPossibleEnchant(player, item);
+}

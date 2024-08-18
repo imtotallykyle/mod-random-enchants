@@ -24,7 +24,7 @@ RandomEnchants.AnnounceOnLogin=1
 #        Message to display on login(Only applies if AnnounceOnLogin is enabled)
 #        Default:    "This server is running the RandomEnchantsRebalanced Module."
 
-RandomEnchants.OnLoginMessage="This server is running the RandomEnchantsRebalanced Module."
+RandomEnchants.OnLoginMessage="This server is running the |cff4CFF00Random Enchants Rebalanced |rmodule."
 
 #
 #     RandomEnchants.OnLoot
@@ -53,6 +53,13 @@ RandomEnchants.OnQuestReward=1
 #        Default:     1
 
 RandomEnchants.OnGroupRoll=1
+
+#
+#     RandomEnchants.OnAfterStoreOrEquipNewItem 
+#        Chance at random enchant on obtaining item from vendors
+#        Default:     1
+
+RandomEnchants.OnAfterStoreOrEquipNewItem=1
 
 #     RandomEnchants.IncludeProfessionEnchants
 #        Weather or not to include Gathering Profession Enchants (i.e. +5 Fishing, +5 Skinning, etc.) when randomly enchanting.
